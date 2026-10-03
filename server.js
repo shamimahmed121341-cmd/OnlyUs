@@ -339,7 +339,40 @@ io.on("connection", (socket) => {
   // -----------------------------
   // DISCONNECT
   // -----------------------------
+// ==========================
+// AUDIO/VIDEO CALL SIGNALING
+// ==========================
 
+socket.on("call-user", ({ to, offer }) => {
+  if (!socket.username) return;
+
+  io.to(to).emit("incoming-call", {
+    from: socket.username,
+    offer
+  });
+});
+
+socket.on("answer-call", ({ to, answer }) => {
+  if (!socket.username) return;
+
+  io.to(to).emit("call-answered", {
+    answer
+  });
+});
+
+socket.on("ice-candidate", ({ to, candidate }) => {
+  if (!socket.username) return;
+
+  io.to(to).emit("ice-candidate", {
+    candidate
+  });
+});
+
+socket.on("end-call", ({ to }) => {
+  if (!socket.username) return;
+
+  io.to(to).emit("call-ended");
+});
   socket.on("disconnect", () => {
 
     console.log(

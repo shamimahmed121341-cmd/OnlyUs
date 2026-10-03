@@ -1,340 +1,275 @@
 <!DOCTYPE html>
 <html lang="bn">
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OnlyUs ❤️</title>
 
-<meta charset="UTF-8">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
 
-<meta
-name="viewport"
-content="width=device-width, initial-scale=1.0">
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+    }
 
-<title>OnlyUs ❤️ Chat</title>
+    header {
+      height: 60px;
+      background: #111;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 15px;
+    }
 
-<style>
+    header h2 {
+      margin: 0;
+      font-size: 20px;
+    }
 
-*{
-box-sizing:border-box;
-}
+    .call-buttons button {
+      border: none;
+      background: #333;
+      color: white;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      font-size: 19px;
+      margin-left: 5px;
+    }
 
-body{
-margin:0;
-height:100vh;
-font-family:Arial,sans-serif;
-background:#efe7de;
-overflow:hidden;
-}
+    #messages {
+      height: calc(100vh - 125px);
+      overflow-y: auto;
+      padding: 15px;
+    }
 
-.header{
-height:70px;
-background:#ff2f68;
-color:white;
-display:flex;
-align-items:center;
-padding:10px 14px;
-gap:12px;
-}
+    .message {
+      max-width: 75%;
+      padding: 10px 13px;
+      margin: 7px 0;
+      border-radius: 15px;
+      word-wrap: break-word;
+    }
 
-.avatar{
-width:48px;
-height:48px;
-border-radius:50%;
-background:white;
-display:flex;
-align-items:center;
-justify-content:center;
-font-size:25px;
-}
+    .mine {
+      margin-left: auto;
+      background: #111;
+      color: white;
+    }
 
-.user-info{
-flex:1;
-}
+    .theirs {
+      margin-right: auto;
+      background: white;
+      color: #111;
+    }
 
-.user-info h3{
-margin:0;
-font-size:18px;
-}
+    .bottom {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 65px;
+      background: white;
+      display: flex;
+      align-items: center;
+      padding: 8px;
+      border-top: 1px solid #ddd;
+    }
 
-.user-info small{
-opacity:.85;
-}
+    #messageInput {
+      flex: 1;
+      height: 45px;
+      border: 1px solid #ddd;
+      border-radius: 25px;
+      padding: 0 15px;
+      outline: none;
+      font-size: 16px;
+    }
 
-.call-buttons{
-display:flex;
-gap:8px;
-}
+    #sendBtn {
+      width: 45px;
+      height: 45px;
+      margin-left: 7px;
+      border: none;
+      border-radius: 50%;
+      background: #111;
+      color: white;
+      font-size: 18px;
+    }
 
-.call-buttons button{
-width:42px;
-height:42px;
-border:0;
-border-radius:50%;
-background:rgba(255,255,255,.2);
-color:white;
-font-size:20px;
-}
+    #callScreen {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: #111;
+      z-index: 1000;
+      color: white;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+    }
 
-.chat{
-height:calc(100vh - 135px);
-padding:15px;
-overflow-y:auto;
-display:flex;
-flex-direction:column;
-gap:8px;
-}
+    #callTitle {
+      font-size: 25px;
+      margin-bottom: 20px;
+    }
 
-.message{
-max-width:75%;
-padding:10px 13px;
-border-radius:15px;
-font-size:15px;
-word-wrap:break-word;
-}
+    #remoteVideo {
+      width: 100%;
+      max-width: 500px;
+      max-height: 70vh;
+      background: black;
+      display: none;
+      object-fit: cover;
+      border-radius: 12px;
+    }
 
-.mine{
-align-self:flex-end;
-background:#ffd1dd;
-border-bottom-right-radius:4px;
-}
+    #localVideo {
+      position: absolute;
+      right: 15px;
+      top: 15px;
+      width: 120px;
+      height: 170px;
+      background: #222;
+      object-fit: cover;
+      border-radius: 10px;
+      display: none;
+    }
 
-.theirs{
-align-self:flex-start;
-background:white;
-border-bottom-left-radius:4px;
-}
+    #callStatus {
+      margin-bottom: 20px;
+      color: #ccc;
+    }
 
-.time{
-font-size:10px;
-color:#777;
-margin-top:4px;
-text-align:right;
-}
-
-.bottom{
-position:fixed;
-left:0;
-right:0;
-bottom:0;
-height:65px;
-background:white;
-display:flex;
-align-items:center;
-gap:7px;
-padding:8px;
-box-shadow:0 -2px 8px rgba(0,0,0,.15);
-z-index:20;
-}
-
-.icon-btn{
-width:42px;
-height:42px;
-border:0;
-border-radius:50%;
-background:#f1f1f1;
-font-size:20px;
-flex-shrink:0;
-}
-
-.input{
-flex:1;
-min-width:0;
-height:44px;
-border:0;
-outline:none;
-background:#f1f1f1;
-border-radius:22px;
-padding:0 16px;
-font-size:15px;
-}
-
-.send{
-background:#ff2f68;
-color:white;
-}
-
-</style>
-
+    #endCallBtn {
+      margin-top: 25px;
+      width: 65px;
+      height: 65px;
+      border: none;
+      border-radius: 50%;
+      background: #d00;
+      color: white;
+      font-size: 25px;
+    }
+  </style>
 </head>
 
 <body>
 
+<header>
+  <h2>OnlyUs ❤️</h2>
 
-<div class="header">
+  <div class="call-buttons">
+    <button onclick="startAudioCall()">📞</button>
+    <button onclick="startVideoCall()">🎥</button>
+  </div>
+</header>
 
-<div class="avatar">
-❤️
-</div>
-
-<div class="user-info">
-
-<h3>OnlyUs</h3>
-
-<small id="onlineText">
-Connecting...
-</small>
-
-</div>
-
-<div class="call-buttons">
-
-<button>📞</button>
-
-<button>🎥</button>
-
-</div>
-
-</div>
-
-
-<div
-class="chat"
-id="chat">
-</div>
-
+<div id="messages"></div>
 
 <div class="bottom">
-
-<button
-class="icon-btn">
-📷
-</button>
-
-<input
-class="input"
-id="messageInput"
-type="text"
-placeholder="Message..."
-autocomplete="off"
->
-
-<button
-class="icon-btn">
-🎤
-</button>
-
-<button
-class="icon-btn send"
-onclick="sendMessage()">
-➤
-</button>
-
+  <input id="messageInput" placeholder="Message..." autocomplete="off">
+  <button id="sendBtn">➤</button>
 </div>
 
+<!-- CALL SCREEN -->
+<div id="callScreen">
+
+  <div id="callTitle">OnlyUs ❤️</div>
+
+  <div id="callStatus">Calling...</div>
+
+  <video id="remoteVideo" autoplay playsinline></video>
+  <video id="localVideo" autoplay muted playsinline></video>
+
+  <button id="endCallBtn" onclick="endCall()">📞</button>
+
+</div>
 
 <script src="/socket.io/socket.io.js"></script>
 
 <script>
 
-
 const socket = io();
 
 let myUsername = "";
+let partnerUsername = "";
+
+let peerConnection = null;
+let localStream = null;
+
+let currentCallType = null;
+let currentCallPartner = null;
+
+const messagesDiv = document.getElementById("messages");
+const messageInput = document.getElementById("messageInput");
+const sendBtn = document.getElementById("sendBtn");
+
+const callScreen = document.getElementById("callScreen");
+const callTitle = document.getElementById("callTitle");
+const callStatus = document.getElementById("callStatus");
+
+const localVideo = document.getElementById("localVideo");
+const remoteVideo = document.getElementById("remoteVideo");
 
 
 // ==========================
-// LOGIN USER CHECK
+// GET CURRENT USER
 // ==========================
 
-async function getMyUser(){
+async function getMyUser() {
 
-try{
+  const response = await fetch("/me");
 
-const response =
-await fetch("/me");
+  if (!response.ok) {
+    location.href = "/";
+    return;
+  }
 
-const data =
-await response.json();
+  const data = await response.json();
 
+  myUsername = data.username;
 
-if(!data.success){
+  partnerUsername =
+    myUsername === "Shamim"
+      ? "muntaha"
+      : "Shamim";
 
-window.location.href="/";
+  socket.emit("join", myUsername);
 
-return;
-
-}
-
-
-myUsername =
-data.username;
-
-
-document.getElementById(
-"onlineText"
-).textContent =
-"Online";
-
-
-socket.emit(
-"join",
-myUsername
-);
-
-
-// পুরোনো মেসেজ আনবে
-
-await loadOldMessages();
-
-
-}catch(error){
-
-console.log(
-"User error:",
-error
-);
-
-}
-
+  loadMessages();
 }
 
 
 // ==========================
-// OLD MESSAGES
+// LOAD OLD MESSAGES
 // ==========================
 
-async function loadOldMessages(){
+async function loadMessages() {
 
-try{
+  const response = await fetch("/messages");
 
-const response =
-await fetch("/messages");
+  if (!response.ok) return;
 
-const data =
-await response.json();
+  const messages = await response.json();
 
+  messagesDiv.innerHTML = "";
 
-if(!data.success){
+  messages.forEach(message => {
 
-return;
+    addMessage(
+      message.from,
+      message.text
+    );
 
-}
+  });
 
-
-const chat =
-document.getElementById(
-"chat"
-);
-
-
-chat.innerHTML="";
-
-
-data.messages.forEach(
-message => {
-
-showMessage(message);
-
-});
-
-
-}catch(error){
-
-console.log(
-"Message loading error:",
-error
-);
-
-}
-
+  messagesDiv.scrollTop = messagesDiv.scrollHeight;
 }
 
 
@@ -342,169 +277,617 @@ error
 // SHOW MESSAGE
 // ==========================
 
-function showMessage(message){
+function addMessage(from, text) {
 
-const chat =
-document.getElementById(
-"chat"
-);
+  const div = document.createElement("div");
 
+  div.classList.add("message");
 
-const div =
-document.createElement(
-"div"
-);
+  if (from === myUsername) {
+    div.classList.add("mine");
+  } else {
+    div.classList.add("theirs");
+  }
 
+  div.textContent = text;
 
-div.className =
-"message " +
-(
-message.from === myUsername
-? "mine"
-: "theirs"
-);
+  messagesDiv.appendChild(div);
 
-
-const text =
-document.createElement(
-"div"
-);
-
-
-text.textContent =
-message.text;
-
-
-const time =
-document.createElement(
-"div"
-);
-
-
-time.className="time";
-
-
-const date =
-new Date(
-message.time
-);
-
-
-time.textContent =
-date.toLocaleTimeString(
-[],
-{
-hour:"2-digit",
-minute:"2-digit"
+  messagesDiv.scrollTop = messagesDiv.scrollHeight;
 }
-);
 
 
-div.appendChild(text);
+// ==========================
+// SEND MESSAGE
+// ==========================
 
-div.appendChild(time);
+function sendMessage() {
 
-chat.appendChild(div);
+  const text = messageInput.value.trim();
+
+  if (!text) return;
+
+  socket.emit("send-message", text);
+
+  messageInput.value = "";
+}
+
+sendBtn.onclick = sendMessage;
+
+messageInput.addEventListener("keydown", function(e) {
+
+  if (e.key === "Enter") {
+    sendMessage();
+  }
+
+});
 
 
-chat.scrollTop =
-chat.scrollHeight;
+// ==========================
+// RECEIVE MESSAGE
+// ==========================
+
+socket.on("receive-message", message => {
+
+  addMessage(
+    message.from,
+    message.text
+  );
+
+});
+
+
+// ==========================
+// WEBRTC CONFIG
+// ==========================
+
+const rtcConfig = {
+
+  iceServers: [
+
+    {
+      urls: "stun:stun.l.google.com:19302"
+    }
+
+  ]
+
+};
+
+
+// ==========================
+// CREATE PEER
+// ==========================
+
+function createPeerConnection() {
+
+  peerConnection =
+    new RTCPeerConnection(rtcConfig);
+
+  peerConnection.onicecandidate =
+    event => {
+
+      if (event.candidate) {
+
+        socket.emit("ice-candidate", {
+
+          to: currentCallPartner,
+
+          candidate: event.candidate
+
+        });
+
+      }
+
+    };
+
+
+  peerConnection.ontrack =
+    event => {
+
+      remoteVideo.srcObject =
+        event.streams[0];
+
+    };
+
+
+  peerConnection.onconnectionstatechange =
+    () => {
+
+      if (!peerConnection) return;
+
+      const state =
+        peerConnection.connectionState;
+
+      if (state === "connected") {
+
+        callStatus.textContent =
+          "Connected";
+
+      }
+
+      if (
+        state === "disconnected" ||
+        state === "failed" ||
+        state === "closed"
+      ) {
+
+        closeCall(false);
+
+      }
+
+    };
 
 }
 
 
 // ==========================
-// SEND
+// GET MICROPHONE / CAMERA
 // ==========================
 
-function sendMessage(){
+async function getMedia(type) {
 
-const input =
-document.getElementById(
-"messageInput"
-);
+  if (type === "video") {
 
+    return await navigator.mediaDevices.getUserMedia({
 
-const text =
-input.value.trim();
+      audio: true,
 
+      video: true
 
-if(!text){
+    });
 
-return;
+  }
 
-}
+  return await navigator.mediaDevices.getUserMedia({
 
+    audio: true,
 
-if(!myUsername){
+    video: false
 
-alert(
-"Login এখনও প্রস্তুত হয়নি"
-);
-
-return;
-
-}
-
-
-socket.emit(
-"send-message",
-text
-);
-
-
-input.value="";
+  });
 
 }
 
 
 // ==========================
-// RECEIVE
+// START AUDIO CALL
+// ==========================
+
+async function startAudioCall() {
+
+  await startCall("audio");
+
+}
+
+
+// ==========================
+// START VIDEO CALL
+// ==========================
+
+async function startVideoCall() {
+
+  await startCall("video");
+
+}
+
+
+// ==========================
+// START CALL
+// ==========================
+
+async function startCall(type) {
+
+  try {
+
+    currentCallType = type;
+
+    currentCallPartner =
+      partnerUsername;
+
+    showCallScreen(
+      type,
+      "Calling..."
+    );
+
+    localStream =
+      await getMedia(type);
+
+    createPeerConnection();
+
+    localStream
+      .getTracks()
+      .forEach(track => {
+
+        peerConnection.addTrack(
+          track,
+          localStream
+        );
+
+      });
+
+
+    if (type === "video") {
+
+      localVideo.srcObject =
+        localStream;
+
+      localVideo.style.display =
+        "block";
+
+      remoteVideo.style.display =
+        "block";
+
+    } else {
+
+      localVideo.style.display =
+        "none";
+
+      remoteVideo.style.display =
+        "none";
+
+    }
+
+
+    const offer =
+      await peerConnection.createOffer();
+
+    await peerConnection.setLocalDescription(
+      offer
+    );
+
+
+    socket.emit("call-user", {
+
+      to: currentCallPartner,
+
+      offer: offer,
+
+      callType: type
+
+    });
+
+  }
+
+  catch (error) {
+
+    console.log(error);
+
+    alert(
+      "Camera/Microphone permission দিন অথবা ডিভাইসে Camera/Microphone চালু করুন।"
+    );
+
+    closeCall(false);
+
+  }
+
+}
+
+
+// ==========================
+// INCOMING CALL
 // ==========================
 
 socket.on(
-"receive-message",
-(message) => {
+  "incoming-call",
+  async data => {
 
-showMessage(message);
+    try {
 
-}
+      const type =
+        data.callType || "audio";
+
+      const accept =
+        confirm(
+          data.from +
+          " আপনাকে " +
+          (type === "video"
+            ? "ভিডিও"
+            : "অডিও") +
+          " কল করছে। গ্রহণ করবেন?"
+        );
+
+      if (!accept) {
+
+        return;
+
+      }
+
+
+      currentCallType =
+        type;
+
+      currentCallPartner =
+        data.from;
+
+
+      showCallScreen(
+        type,
+        "Connecting..."
+      );
+
+
+      localStream =
+        await getMedia(type);
+
+      createPeerConnection();
+
+
+      localStream
+        .getTracks()
+        .forEach(track => {
+
+          peerConnection.addTrack(
+            track,
+            localStream
+          );
+
+        });
+
+
+      if (type === "video") {
+
+        localVideo.srcObject =
+          localStream;
+
+        localVideo.style.display =
+          "block";
+
+        remoteVideo.style.display =
+          "block";
+
+      } else {
+
+        localVideo.style.display =
+          "none";
+
+        remoteVideo.style.display =
+          "none";
+
+      }
+
+
+      await peerConnection.setRemoteDescription(
+        new RTCSessionDescription(
+          data.offer
+        )
+      );
+
+
+      const answer =
+        await peerConnection.createAnswer();
+
+      await peerConnection.setLocalDescription(
+        answer
+      );
+
+
+      socket.emit("answer-call", {
+
+        to: data.from,
+
+        answer: answer
+
+      });
+
+      callStatus.textContent =
+        "Connected";
+
+    }
+
+    catch (error) {
+
+      console.log(error);
+
+      alert(
+        "কল গ্রহণ করতে Camera/Microphone permission প্রয়োজন।"
+      );
+
+      closeCall(false);
+
+    }
+
+  }
 );
 
 
 // ==========================
-// ENTER
+// CALL ANSWERED
 // ==========================
 
-document
-.getElementById(
-"messageInput"
-)
-.addEventListener(
-"keydown",
-function(event){
+socket.on(
+  "call-answered",
+  async data => {
 
-if(
-event.key === "Enter"
-){
+    try {
 
-sendMessage();
+      await peerConnection.setRemoteDescription(
 
-}
+        new RTCSessionDescription(
+          data.answer
+        )
 
-}
+      );
+
+      callStatus.textContent =
+        "Connected";
+
+    }
+
+    catch (error) {
+
+      console.log(error);
+
+    }
+
+  }
 );
 
 
 // ==========================
+// ICE CANDIDATE
+// ==========================
+
+socket.on(
+  "ice-candidate",
+  async data => {
+
+    try {
+
+      if (
+        peerConnection &&
+        data.candidate
+      ) {
+
+        await peerConnection.addIceCandidate(
+
+          new RTCIceCandidate(
+            data.candidate
+          )
+
+        );
+
+      }
+
+    }
+
+    catch (error) {
+
+      console.log(
+        "ICE error:",
+        error
+      );
+
+    }
+
+  }
+);
+
+
+// ==========================
+// END CALL FROM OTHER SIDE
+// ==========================
+
+socket.on(
+  "call-ended",
+  () => {
+
+    closeCall(false);
+
+  }
+);
+
+
+// ==========================
+// END CALL
+// ==========================
+
+function endCall() {
+
+  if (currentCallPartner) {
+
+    socket.emit(
+      "end-call",
+      {
+        to: currentCallPartner
+      }
+    );
+
+  }
+
+  closeCall(false);
+
+}
+
+
+// ==========================
+// CLOSE CALL
+// ==========================
+
+function closeCall(sendSignal) {
+
+  if (sendSignal && currentCallPartner) {
+
+    socket.emit(
+      "end-call",
+      {
+        to: currentCallPartner
+      }
+    );
+
+  }
+
+
+  if (localStream) {
+
+    localStream
+      .getTracks()
+      .forEach(track => {
+
+        track.stop();
+
+      });
+
+    localStream = null;
+
+  }
+
+
+  if (peerConnection) {
+
+    peerConnection.close();
+
+    peerConnection = null;
+
+  }
+
+
+  localVideo.srcObject = null;
+
+  remoteVideo.srcObject = null;
+
+  localVideo.style.display =
+    "none";
+
+  remoteVideo.style.display =
+    "none";
+
+  callScreen.style.display =
+    "none";
+
+  currentCallType = null;
+
+  currentCallPartner = null;
+
+}
+
+
+// ==========================
+// CALL SCREEN
+// ==========================
+
+function showCallScreen(
+  type,
+  status
+) {
+
+  callScreen.style.display =
+    "flex";
+
+  callTitle.textContent =
+    type === "video"
+      ? "🎥 Video Call"
+      : "📞 Audio Call";
+
+  callStatus.textContent =
+    status;
+
+}
+
+
 // START
-// ==========================
-
 getMyUser();
-
 
 </script>
 
 </body>
-
 </html>
