@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>OnlyUs ❤️ Chat</title>
+
+<style>
+
+*{
+box-sizing:border-box;
+}
+
+body{
+margin:0;
+height:100vh;
+font-family:Arial,sans-serif;
+background:#efe7de;
+overflow:hidden;
+}
+
+.header{
+height:70px;
+background:#ff2f68;
+color:white;
+display:flex;
+align-items:center;
+padding:10px 14px;
+gap:12px;
+}
+
+.avatar{
+width:48px;
+height:48px;
+border-radius:50%;
+background:white;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:25px;
+}
+
+.user-info{
+flex:1;
+}
+
+.user-info h3{
+margin:0;
+font-size:18px;
+}
+
+.user-info small{
+opacity:.85;
+}
+
+.call-buttons{
+display:flex;
+gap:8px;
+}
+
+.call-buttons button{
+width:42px;
+height:42px;
+border:0;
+border-radius:50%;
+background:rgba(255,255,255,.2);
+color:white;
+font-size:20px;
+}
+
+.chat{
+height:calc(100vh - 135px);
+padding:15px;
+overflow-y:auto;
+display:flex;
+flex-direction:column;
+gap:8px;
+}
+
+.message{
+max-width:75%;
+padding:10px 13px;
+border-radius:15px;
+font-size:15px;
+word-wrap:break-word;
+}
+
+.mine{
+align-self:flex-end;
+background:#ffd1dd;
+border-bottom-right-radius:4px;
+}
+
+.theirs{
+align-self:flex-start;
+background:white;
+border-bottom-left-radius:4px;
+}
+
+.time{
+font-size:10px;
+color:#777;
+margin-top:4px;
+text-align:right;
+}
+
+.bottom{
+position:fixed;
+left:0;
+right:0;
+bottom:0;
+height:65px;
+background:white;
+display:flex;
+align-items:center;
+gap:7px;
+padding:8px;
+box-shadow:0 -2px 8px rgba(0,0,0,.15);
+z-index:20;
+}
+
+.icon-btn{
+width:42px;
+height:42px;
+border:0;
+border-radius:50%;
+background:#f1f1f1;
+font-size:20px;
+flex-shrink:0;
+}
+
+.input{
+flex:1;
+min-width:0;
+height:44px;
+border:0;
+outline:none;
+background:#f1f1f1;
+border-radius:22px;
+padding:0 16px;
+font-size:15px;
+}
+
+.send{
+background:#ff2f68;
+color:white;
+}
+
+</style>
+
+</head>
+
+<body>
+
+
+<div class="header">
+
+<div class="avatar">
+❤️
+</div>
+
+<div class="user-info">
+
+<h3>OnlyUs</h3>
+
+<small id="onlineText">
+Connecting...
+</small>
+
+</div>
+
+<div class="call-buttons">
+
+<button>📞</button>
+
+<button>🎥</button>
+
+</div>
+
+</div>
+
+
+<div
+class="chat"
+id="chat">
+</div>
+
+
+<div class="bottom">
+
+<button
+class="icon-btn">
+📷
+</button>
+
+<input
+class="input"
+id="messageInput"
+type="text"
+placeholder="Message..."
+autocomplete="off"
+>
+
+<button
+class="icon-btn">
+🎤
+</button>
+
+<button
+class="icon-btn send"
+onclick="sendMessage()">
+➤
+</button>
+
+</div>
+
+
+<script src="/socket.io/socket.io.js"></script>
+
+<script>
+
+
+const socket = io();
+
+let myUsername = "";
+
+
+// ==========================
+// LOGIN USER CHECK
+// ==========================
+
+async function getMyUser(){
+
+try{
+
+const response =
+await fetch("/me");
+
+const data =
+await response.json();
+
+
+if(!data.success){
+
+window.location.href="/";
+
+return;
+
+}
+
+
+myUsername =
+data.username;
+
+
+document.getElementById(
+"onlineText"
+).textContent =
+"Online";
+
+
+socket.emit(
+"join",
+myUsername
+);
+
+
+// পুরোনো মেসেজ আনবে
+
+await loadOldMessages();
+
+
+}catch(error){
+
+console.log(
+"User error:",
+error
+);
+
+}
+
+}
+
+
+// ==========================
+// OLD MESSAGES
+// ==========================
+
+async function loadOldMessages(){
+
+try{
+
+const response =
+await fetch("/messages");
+
+const data =
+await response.json();
+
+
+if(!data.success){
+
+return;
+
+}
+
+
+const chat =
+document.getElementById(
+"chat"
+);
+
+
+chat.innerHTML="";
+
+
+data.messages.forEach(
+message => {
+
+showMessage(message);
+
+});
+
+
+}catch(error){
+
+console.log(
+"Message loading error:",
+error
+);
+
+}
+
+}
+
+
+// ==========================
+// SHOW MESSAGE
+// ==========================
+
+function showMessage(message){
+
+const chat =
+document.getElementById(
+"chat"
+);
+
+
+const div =
+document.createElement(
+"div"
+);
+
+
+div.className =
+"message " +
+(
+message.from === myUsername
+? "mine"
+: "theirs"
+);
+
+
+const text =
+document.createElement(
+"div"
+);
+
+
+text.textContent =
+message.text;
+
+
+const time =
+document.createElement(
+"div"
+);
+
+
+time.className="time";
+
+
+const date =
+new Date(
+message.time
+);
+
+
+time.textContent =
+date.toLocaleTimeString(
+[],
+{
+hour:"2-digit",
+minute:"2-digit"
+}
+);
+
+
+div.appendChild(text);
+
+div.appendChild(time);
+
+chat.appendChild(div);
+
+
+chat.scrollTop =
+chat.scrollHeight;
+
+}
+
+
+// ==========================
+// SEND
+// ==========================
+
+function sendMessage(){
+
+const input =
+document.getElementById(
+"messageInput"
+);
+
+
+const text =
+input.value.trim();
+
+
+if(!text){
+
+return;
+
+}
+
+
+if(!myUsername){
+
+alert(
+"Login এখনও প্রস্তুত হয়নি"
+);
+
+return;
+
+}
+
+
+socket.emit(
+"send-message",
+text
+);
+
+
+input.value="";
+
+}
+
+
+// ==========================
+// RECEIVE
+// ==========================
+
+socket.on(
+"receive-message",
+(message) => {
+
+showMessage(message);
+
+}
+);
+
+
+// ==========================
+// ENTER
+// ==========================
+
+document
+.getElementById(
+"messageInput"
+)
+.addEventListener(
+"keydown",
+function(event){
+
+if(
+event.key === "Enter"
+){
+
+sendMessage();
+
+}
+
+}
+);
+
+
+// ==========================
+// START
+// ==========================
+
+getMyUser();
+
+
+</script>
+
+</body>
+
+</html>

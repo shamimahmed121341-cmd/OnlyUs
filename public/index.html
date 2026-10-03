@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>OnlyUs ❤️</title>
+
+<style>
+
+*{
+box-sizing:border-box;
+}
+
+body{
+margin:0;
+min-height:100vh;
+display:flex;
+align-items:center;
+justify-content:center;
+background:linear-gradient(135deg,#ff4b7d,#7b2cff);
+font-family:Arial,sans-serif;
+}
+
+.box{
+width:90%;
+max-width:380px;
+padding:30px 25px;
+background:white;
+border-radius:24px;
+text-align:center;
+box-shadow:0 15px 40px rgba(0,0,0,.25);
+}
+
+.logo{
+font-size:50px;
+}
+
+h1{
+margin:5px 0;
+color:#ff2f68;
+}
+
+.subtitle{
+color:#777;
+margin-bottom:25px;
+}
+
+input{
+width:100%;
+padding:14px;
+margin:7px 0;
+border:1px solid #ddd;
+border-radius:12px;
+font-size:16px;
+outline:none;
+}
+
+button{
+width:100%;
+padding:14px;
+margin-top:10px;
+border:0;
+border-radius:12px;
+background:#ff2f68;
+color:white;
+font-size:16px;
+font-weight:bold;
+}
+
+.switch{
+margin-top:18px;
+color:#777;
+}
+
+.switch span{
+color:#ff2f68;
+font-weight:bold;
+cursor:pointer;
+}
+
+.hidden{
+display:none;
+}
+
+#message{
+margin-top:15px;
+min-height:22px;
+color:#e91e63;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="box">
+
+<div class="logo">❤️</div>
+
+<h1>OnlyUs</h1>
+
+<div class="subtitle">
+Just You & Me
+</div>
+
+
+<!-- LOGIN -->
+
+<div id="loginBox">
+
+<h2>Login</h2>
+
+<input
+id="loginUsername"
+type="text"
+placeholder="Username"
+>
+
+<input
+id="loginPassword"
+type="password"
+placeholder="Password"
+>
+
+<button onclick="login()">
+Login
+</button>
+
+<div class="switch">
+
+Don't have an account?
+
+<span onclick="showRegister()">
+Register
+</span>
+
+</div>
+
+</div>
+
+
+<!-- REGISTER -->
+
+<div id="registerBox" class="hidden">
+
+<h2>Create Account</h2>
+
+<input
+id="registerUsername"
+type="text"
+placeholder="Username"
+>
+
+<input
+id="registerPassword"
+type="password"
+placeholder="Password"
+>
+
+<button onclick="register()">
+Create Account
+</button>
+
+<div class="switch">
+
+Already have an account?
+
+<span onclick="showLogin()">
+Login
+</span>
+
+</div>
+
+</div>
+
+
+<div id="message"></div>
+
+</div>
+
+
+<script>
+
+
+function showRegister(){
+
+document
+.getElementById("loginBox")
+.classList.add("hidden");
+
+document
+.getElementById("registerBox")
+.classList.remove("hidden");
+
+document
+.getElementById("message")
+.textContent="";
+
+}
+
+
+function showLogin(){
+
+document
+.getElementById("registerBox")
+.classList.add("hidden");
+
+document
+.getElementById("loginBox")
+.classList.remove("hidden");
+
+document
+.getElementById("message")
+.textContent="";
+
+}
+
+
+// =====================
+// REGISTER
+// =====================
+
+async function register(){
+
+const username =
+document
+.getElementById("registerUsername")
+.value
+.trim();
+
+const password =
+document
+.getElementById("registerPassword")
+.value;
+
+const message =
+document
+.getElementById("message");
+
+
+if(!username || !password){
+
+message.textContent =
+"Username এবং password দিন";
+
+return;
+
+}
+
+
+try{
+
+const response =
+await fetch(
+"/register",
+{
+
+method:"POST",
+
+headers:{
+"Content-Type":
+"application/json"
+},
+
+body:JSON.stringify({
+
+username:username,
+password:password
+
+})
+
+});
+
+
+const data =
+await response.json();
+
+
+message.textContent =
+data.message;
+
+
+if(data.success){
+
+showLogin();
+
+}
+
+}catch(error){
+
+message.textContent =
+"Server-এর সাথে যোগাযোগ হচ্ছে না";
+
+}
+
+}
+
+
+// =====================
+// LOGIN
+// =====================
+
+async function login(){
+
+const username =
+document
+.getElementById("loginUsername")
+.value
+.trim();
+
+const password =
+document
+.getElementById("loginPassword")
+.value;
+
+const message =
+document
+.getElementById("message");
+
+
+if(!username || !password){
+
+message.textContent =
+"Username এবং password দিন";
+
+return;
+
+}
+
+
+try{
+
+const response =
+await fetch(
+"/login",
+{
+
+method:"POST",
+
+headers:{
+"Content-Type":
+"application/json"
+},
+
+body:JSON.stringify({
+
+username:username,
+password:password
+
+})
+
+});
+
+
+const data =
+await response.json();
+
+
+if(data.success){
+
+message.textContent =
+"Login সফল হয়েছে ❤️";
+
+
+setTimeout(
+function(){
+
+window.location.href =
+"/chat.html";
+
+},
+500
+);
+
+}else{
+
+message.textContent =
+data.message;
+
+}
+
+
+}catch(error){
+
+message.textContent =
+"Server-এর সাথে যোগাযোগ হচ্ছে না";
+
+}
+
+}
+
+</script>
+
+</body>
+</html>
